@@ -1,4 +1,4 @@
-var UP = "87", DOWN = "83", LEFT = "65", RIGHT = "68", X = 10, Y = 5, XSIZE = 10, YSIZE = 5;
+var UP = "87", DOWN = "83", LEFT = "65", RIGHT = "68", X = 6, Y = 6, XSIZE = 10, YSIZE = 10;
 var c = document.getElementById("canvas");
 var ctx = c.getContext("2d");
 var xPos, yPos;
@@ -8,20 +8,27 @@ window.addEventListener("load",init);
 document.addEventListener('keydown',move);
 
 function init() {
-	xPos = 1;
-	yPos = 1;
+	drawLevel();
+	xPos = 0;
+	yPos = 0;
 	ctx.fillStyle = "black";
 	ctx.fillRect(xPos,yPos,XSIZE,YSIZE);
 }
 
 function clear() {
-	ctx.clearRect(0,0,300,300);
+	ctx.clearRect(0,0,483,483);
+}
+
+function drawLevel() {
+	var img = document.getElementById("maze");
+	ctx.drawImage(img,0,0,483,483);
 }
 
 function reDraw(delX, delY) {
-	if (xPos+delX > 0 && xPos+delX < 300 && 
-		yPos+delY > 0 && yPos+delY < 150) {
+	if (xPos+delX >= 0 && xPos+delX < 483 && 
+		yPos+delY >= 0 && yPos+delY < 483) {
 		clear();
+		drawLevel();
 		ctx.fillStyle = "black";
 		xPos = xPos+delX;
 		yPos = yPos+delY;
@@ -32,10 +39,9 @@ function reDraw(delX, delY) {
 			data.setAttribute("data-item","item stuff");
 		}
 		//making random item to pick up
-		var itemX = 100;
+		/*var itemX = 100;
 		var itemY = 50;
-		ctx.fillRect(itemX,itemY,XSIZE,YSIZE);
-
+		ctx.fillRect(itemX,itemY,XSIZE,YSIZE);*/	
 	}
 }
 
