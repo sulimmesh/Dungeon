@@ -1,4 +1,5 @@
-var UP = "87", DOWN = "83", LEFT = "65", RIGHT = "68", X = 6, Y = 6, XSIZE = 10, YSIZE = 10;
+var UP = "87", DOWN = "83", LEFT = "65", RIGHT = "68", X = 6, Y = 6, xSize = 10, ySize = 10,
+	mazeW = 500, mazeH = 500;
 var c = document.getElementById("canvas");
 var ctx = c.getContext("2d");
 var xPos, yPos;
@@ -9,30 +10,53 @@ document.addEventListener('keydown',move);
 
 function init() {
 	drawLevel();
-	xPos = 0;
-	yPos = 0;
-	ctx.fillStyle = "black";
-	ctx.fillRect(xPos,yPos,XSIZE,YSIZE);
+	xPos = 6;
+	yPos = 6;
+	ctx.fillStyle = "blue";
+	ctx.fillRect(xPos,yPos,xSize,ySize);
 }
 
 function clear() {
-	ctx.clearRect(0,0,483,483);
+	ctx.clearRect(0,0,mazeW,mazeH);
 }
 
 function drawLevel() {
 	var img = document.getElementById("maze");
-	ctx.drawImage(img,0,0,483,483);
+	ctx.drawImage(img,0,0,mazeW,mazeH);
+}
+
+function isWall(delX, delY) {
+	var imgData = ctx.getImageData(xPos+delX, yPos+delY, xSize, ySize);
+	var data = imgData.data;
+	var wall = 0;
+	if (xPos+delX >= 0 && xPos+delX < mazeW && 
+		yPos+delY >= 0 && yPos+delY < mazeH) {
+		wall = 0;
+	} else {
+		wall = 1;
+	}
+
+	for (var i = 0; i < 4 * xSize * ySize; i += 4) {
+		//console.log(data[i],data[i+1],data[i+2]);
+		if (data[i] == 0 && data[i+1] == 0 && data[i+2] == 0) {
+			wall = 1;
+			break;
+		} else {
+			wall = 0;		
+		}
+	}
+	return wall;
 }
 
 function reDraw(delX, delY) {
-	if (xPos+delX >= 0 && xPos+delX < 483 && 
-		yPos+delY >= 0 && yPos+delY < 483) {
+		var wall = isWall(delX,delY);
+		if (wall == 0) {
 		clear();
 		drawLevel();
-		ctx.fillStyle = "black";
+		ctx.fillStyle = "blue";
 		xPos = xPos+delX;
 		yPos = yPos+delY;
-		ctx.fillRect(xPos,yPos,XSIZE,YSIZE);
+		ctx.fillRect(xPos,yPos,xSize,ySize);
 		if (itemPos[0] >= xPos-X && itemPos[0] <= xPos+X 
 			&& itemPos[1] >- yPos-Y && itemPos[1] <= yPos+Y) {
 			var data = document.getElementById("data-item");
