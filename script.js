@@ -3,7 +3,16 @@ var UP = "87", DOWN = "83", LEFT = "65", RIGHT = "68", X = 6, Y = 6, xSize = 10,
 var c = document.getElementById("canvas");
 var ctx = c.getContext("2d");
 var xPos, yPos;
-var itemPos = [100,50];
+var zombieArray = [];
+
+//zombie object
+function zombie(zombieX, zombieY) {
+	this.X = zombieX;
+	this.Y = zombieY;
+}
+
+
+//var itemPos = [100,50];
 
 window.addEventListener("load",init);
 document.addEventListener('keydown',move);
@@ -15,10 +24,20 @@ function init() {
 	yPos = 6;
 	ctx.fillStyle = "blue";
 	ctx.fillRect(xPos,yPos,xSize,ySize);
+	var zombieInterval = setInterval(moveZombie, 1500);
 }
 
 function clear() {
 	ctx.clearRect(0,0,mazeW,mazeH);
+}
+
+function clearZombie() {
+	var x, y;
+	for (var i = 0; i < zombieArray.length; i++) {
+		x = zombieArray[i].X;
+		y = zombieArray[i].Y;
+		ctx.clearRect(x,y,xSize,ySize);
+	}
 }
 
 function drawLevel() {
@@ -26,9 +45,14 @@ function drawLevel() {
 	ctx.drawImage(img,0,0,mazeW,mazeH);
 }
 
-function drawZombie(randomX, randomY) {
+function drawPlayer(xPos,yPos) {
+	ctx.fillStyle = "blue";
+	ctx.fillRect(xPos,yPos,xSize,ySize);
+}
+
+function drawZombie(zombie) {
 	ctx.fillStyle = "green";
-	ctx.fillRect(randomX,randomY,xSize,ySize);
+	ctx.fillRect(zombie.X,zombie.Y,xSize,ySize);
 }
 
 function genZombie() {
@@ -42,7 +66,45 @@ function genZombie() {
 		if (wall == 0) {
 			count++;
 			//console.log(randomX, randomY);
-			drawZombie(randomX, randomY);
+			var newZombie = new zombie(randomX, randomY);
+			zombieArray[zombieArray.length] = newZombie;
+		}
+	}
+
+	for (var i = 0; i < zombieArray.length; i++) {
+		drawZombie(zombieArray[i]);
+	}
+}
+
+function moveZombie() {
+	var delX, delY, wall, targetX, targetY;
+	clearZombie();
+	drawLevel();
+	drawPlayer(xPos,yPos);
+	for (var i = 0; i < zombieArray.length; i++) {
+		var newDir = Math.floor(Math.random() * (4-1) + 1);
+		if (newDir == 1) {
+			delX = 0;
+			delY = -Y;
+		} else if (newDir == 2) {
+			delX = 0;
+			delY = Y;
+		} else if (newDir == 3) {
+			delX = -X;
+			delY = 0;		
+		} else if (newDir == 4) {
+			delX = X;
+			delY = 0;
+		}
+		targetX = delX+zombieArray[i].X;
+		targetY = delY+zombieArray[i].Y;
+		wall = isWall(targetX, targetY);
+		if (wall == 0) {
+			zombieArray[i].X = targetX;		
+			zombieArray[i].Y = targetY;
+			drawZombie(zombieArray[i]);
+		} else {
+			drawZombie(zombieArray[i]);
 		}
 	}
 }
@@ -77,15 +139,17 @@ function reDraw(delX, delY) {
 		if (wall == 0) {
 		clear();
 		drawLevel();
-		ctx.fillStyle = "blue";
-		xPos = xPos+delX;
-		yPos = yPos+delY;
-		ctx.fillRect(xPos,yPos,xSize,ySize);
-		if (itemPos[0] >= xPos-X && itemPos[0] <= xPos+X 
+		for (var i = 0; i < zombieArray.length; i++) {
+			drawZombie(zombieArray[i]);
+		}
+		xPos = targetX;
+		yPos = targetY;
+		drawPlayer(xPos,yPos);
+		/* if (itemPos[0] >= xPos-X && itemPos[0] <= xPos+X 
 			&& itemPos[1] >- yPos-Y && itemPos[1] <= yPos+Y) {
 			var data = document.getElementById("data-item");
 			data.setAttribute("data-item","item stuff");
-		}
+		} */
 		//making random item to pick up
 		/*var itemX = 100;
 		var itemY = 50;
