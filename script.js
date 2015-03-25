@@ -10,6 +10,7 @@ document.addEventListener('keydown',move);
 
 function init() {
 	drawLevel();
+	genZombie();
 	xPos = 6;
 	yPos = 6;
 	ctx.fillStyle = "blue";
@@ -25,12 +26,33 @@ function drawLevel() {
 	ctx.drawImage(img,0,0,mazeW,mazeH);
 }
 
-function isWall(delX, delY) {
-	var imgData = ctx.getImageData(xPos+delX, yPos+delY, xSize, ySize);
+function drawZombie(randomX, randomY) {
+	ctx.fillStyle = "green";
+	ctx.fillRect(randomX,randomY,xSize,ySize);
+}
+
+function genZombie() {
+	var count = 0;
+	var imgData = ctx.getImageData(0,0,mazeW,mazeH);
+	var data = imgData.data;
+	while (count < 5) {
+		var randomX = Math.floor(Math.random() * (501-100)) + 100;
+		var randomY = Math.floor(Math.random() * (501-100)) + 100;
+		var wall = isWall(randomX, randomY);
+		if (wall == 0) {
+			count++;
+			//console.log(randomX, randomY);
+			drawZombie(randomX, randomY);
+		}
+	}
+}
+
+function isWall(targetX, targetY) {
+	var imgData = ctx.getImageData(targetX, targetY, xSize, ySize);
 	var data = imgData.data;
 	var wall = 0;
-	if (xPos+delX >= 0 && xPos+delX < mazeW && 
-		yPos+delY >= 0 && yPos+delY < mazeH) {
+	if (targetX >= 0 && targetX < mazeW && 
+		targetY >= 0 && targetY < mazeH) {
 		wall = 0;
 	} else {
 		wall = 1;
@@ -49,7 +71,9 @@ function isWall(delX, delY) {
 }
 
 function reDraw(delX, delY) {
-		var wall = isWall(delX,delY);
+		var targetX = delX+xPos;
+		var targetY = delY+yPos;
+		var wall = isWall(targetX,targetY);
 		if (wall == 0) {
 		clear();
 		drawLevel();
