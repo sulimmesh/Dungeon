@@ -69,9 +69,14 @@ function genZombie() {
 	var data = imgData.data;
 	var wall = 1;
 	while(wall == 1) {
-		var randomX = Math.floor(Math.random() * (501-100)) + 100;
-		var randomY = Math.floor(Math.random() * (501-100)) + 100;
+		var randomX = Math.floor(Math.random() * (501-0)) + 0;
+		var randomY = Math.floor(Math.random() * (501-0)) + 0;
 		wall = isWall(randomX, randomY);
+
+		if (randomX < 100 && randomY < 100) {
+			//protecting the player from zombies generating too close
+			wall = 1;
+		}
 	}
 	//console.log(randomX, randomY);
 	var newZombie = new Zombie(randomX, randomY);
