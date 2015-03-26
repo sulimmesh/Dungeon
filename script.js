@@ -2,13 +2,22 @@ var UP = "87", DOWN = "83", LEFT = "65", RIGHT = "68", X = 6, Y = 6, xSize = 10,
 	mazeW = 500, mazeH = 500;
 var c = document.getElementById("canvas");
 var ctx = c.getContext("2d");
-var xPos, yPos;
+var xPos, yPos, player;
 var zombieArray = [];
 
 //zombie object
-function zombie(zombieX, zombieY) {
+function Zombie(zombieX, zombieY) {
 	this.X = zombieX;
 	this.Y = zombieY;
+	this.drawColor = "green";
+	this.direction = Math.floor(Math.random() * (4-1)) + 1;
+}
+
+//for now player is essentially the same as zombie. this will change as the game fills out
+function Player(playerX, playerY) {
+	this.X = playerX;
+	this.Y = playerY;
+	this.drawColor = "blue";
 }
 
 
@@ -19,12 +28,17 @@ document.addEventListener('keydown',move);
 
 function init() {
 	drawLevel();
-	genZombie();
+
+	for (var i = 0; i <6; i++) {
+		genZombie();
+	}
+
 	xPos = 6;
 	yPos = 6;
-	ctx.fillStyle = "blue";
-	ctx.fillRect(xPos,yPos,xSize,ySize);
-	var zombieInterval = setInterval(moveZombie, 1500);
+	player = new Player(xPos,yPos);
+	drawChar(player);
+	var walkInterval = setInterval(moveZombie, 1500);
+	var genInterval = setInterval(genZombie, 20000);
 }
 
 function clear() {
@@ -45,44 +59,42 @@ function drawLevel() {
 	ctx.drawImage(img,0,0,mazeW,mazeH);
 }
 
-function drawPlayer(xPos,yPos) {
-	ctx.fillStyle = "blue";
-	ctx.fillRect(xPos,yPos,xSize,ySize);
-}
-
-function drawZombie(zombie) {
-	ctx.fillStyle = "green";
-	ctx.fillRect(zombie.X,zombie.Y,xSize,ySize);
+function drawChar(character) {
+	ctx.fillStyle = character.drawColor;
+	ctx.fillRect(character.X,character.Y,xSize,ySize);
 }
 
 function genZombie() {
-	var count = 0;
 	var imgData = ctx.getImageData(0,0,mazeW,mazeH);
 	var data = imgData.data;
-	while (count < 5) {
+	var wall = 1;
+	while(wall == 1) {
 		var randomX = Math.floor(Math.random() * (501-100)) + 100;
 		var randomY = Math.floor(Math.random() * (501-100)) + 100;
-		var wall = isWall(randomX, randomY);
-		if (wall == 0) {
-			count++;
-			//console.log(randomX, randomY);
-			var newZombie = new zombie(randomX, randomY);
-			zombieArray[zombieArray.length] = newZombie;
-		}
+		wall = isWall(randomX, randomY);
 	}
-
-	for (var i = 0; i < zombieArray.length; i++) {
-		drawZombie(zombieArray[i]);
-	}
+	//console.log(randomX, randomY);
+	var newZombie = new Zombie(randomX, randomY);
+	zombieArray[zombieArray.length] = newZombie;
+	drawChar(zombieArray[zombieArray.length-1]);
 }
 
 function moveZombie() {
 	var delX, delY, wall, targetX, targetY;
 	clearZombie();
 	drawLevel();
-	drawPlayer(xPos,yPos);
+	drawChar(player);
 	for (var i = 0; i < zombieArray.length; i++) {
-		var newDir = Math.floor(Math.random() * (4-1) + 1);
+		//making a semi-random number for the new direction of the zombie
+		//there is a 50% chance that the zombie will move in his old direction
+		///or a 50% chance that he'll move in a new direction.
+		//since this new direction also has a 1/4 chane to be the old direction
+		//the actual chance of maintaining current direction is 3/4
+		var randomDir = Math.floor(Math.random() * (4-1)) + 1;
+		var flip = Math.floor(Math.random() * (2)) + 0;
+		var dirArray = [zombieArray[i].direction, randomDir];
+		var newDir = dirArray[flip];
+
 		if (newDir == 1) {
 			delX = 0;
 			delY = -Y;
@@ -102,9 +114,15 @@ function moveZombie() {
 		if (wall == 0) {
 			zombieArray[i].X = targetX;		
 			zombieArray[i].Y = targetY;
-			drawZombie(zombieArray[i]);
+			drawChar(zombieArray[i]);
+			//we only assign the new direction to the zombie if 
+			//that direction is in white space
+			zombieArray[i].direction = newDir;
+
 		} else {
-			drawZombie(zombieArray[i]);
+			//here we don't re-assign the direction, so the zombie will start
+			//the next cycle with a 3/4 chance to continue moving towards the last direction
+			drawChar(zombieArray[i]);
 		}
 	}
 }
@@ -133,27 +151,18 @@ function isWall(targetX, targetY) {
 }
 
 function reDraw(delX, delY) {
-		var targetX = delX+xPos;
-		var targetY = delY+yPos;
+		var targetX = delX+player.X;
+		var targetY = delY+player.Y;
 		var wall = isWall(targetX,targetY);
 		if (wall == 0) {
 		clear();
 		drawLevel();
 		for (var i = 0; i < zombieArray.length; i++) {
-			drawZombie(zombieArray[i]);
+			drawChar(zombieArray[i]);
 		}
-		xPos = targetX;
-		yPos = targetY;
-		drawPlayer(xPos,yPos);
-		/* if (itemPos[0] >= xPos-X && itemPos[0] <= xPos+X 
-			&& itemPos[1] >- yPos-Y && itemPos[1] <= yPos+Y) {
-			var data = document.getElementById("data-item");
-			data.setAttribute("data-item","item stuff");
-		} */
-		//making random item to pick up
-		/*var itemX = 100;
-		var itemY = 50;
-		ctx.fillRect(itemX,itemY,XSIZE,YSIZE);*/	
+		player.X = targetX;
+		player.Y = targetY;
+		drawChar(player);
 	}
 }
 
