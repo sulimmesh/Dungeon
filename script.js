@@ -52,6 +52,15 @@ function init() {
 	dataInterval = setInterval(dataHandle, 1000);
 }
 
+function endGame(numLives) {
+	if (numLives <= 0) {
+		clearInterval(walkInterval);
+		clearInterval(genInterval);
+		clearInterval(dataInterval);
+	}
+	console.log("Sorry, but you've lost");
+}
+
 function dataHandle() {
 	timerTracker();
 	scoreTracker();
