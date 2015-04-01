@@ -196,6 +196,10 @@ function isWall(targetX, targetY) {
 	return wall;
 }
 
+function isZombie(targetX,targetY) {
+
+}
+
 function reDraw(delX, delY) {
 		var targetX = delX+player.X;
 		var targetY = delY+player.Y;
