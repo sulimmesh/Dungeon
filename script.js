@@ -1,9 +1,18 @@
+//declaring direction and maze variables
 var UP = "87", DOWN = "83", LEFT = "65", RIGHT = "68", X = 6, Y = 6, xSize = 10, ySize = 10,
 	mazeW = 500, mazeH = 500;
+//declaring the canvas
 var c = document.getElementById("canvas");
 var ctx = c.getContext("2d");
+//declaring the player positioning
 var xPos, yPos, player;
+//declaring the intervals that will be used here
+var walkInterval, genInterval, dataInterval;
+//the zombie array
 var zombieArray = [];
+//declaring the data elements
+var dataArray = [document.getElementById("data-lives"), document.getElementById("data-level"), 
+	document.getElementById("data-score"), document.getElementById("data-timer")];
 
 //zombie object
 function Zombie(zombieX, zombieY) {
@@ -22,13 +31,13 @@ function Player(playerX, playerY) {
 
 
 //var itemPos = [100,50];
-
+//adding the event listeners
 window.addEventListener("load",init);
 document.addEventListener('keydown',move);
 
 function init() {
 	drawLevel();
-
+	writeData();
 	for (var i = 0; i <6; i++) {
 		genZombie();
 	}
@@ -37,8 +46,15 @@ function init() {
 	yPos = 6;
 	player = new Player(xPos,yPos);
 	drawChar(player);
-	var walkInterval = setInterval(moveZombie, 1500);
-	var genInterval = setInterval(genZombie, 20000);
+	walkInterval = setInterval(moveZombie, 1500);
+	genInterval = setInterval(genZombie, 20000);
+	dataInterval = setInterval(writeData, 1000);
+}
+
+function writeData() {
+	for (var i = 0; i < dataArray.length; i++) {
+		dataArray[i].innerHTML = dataArray[i].getAttribute('data-item');
+	}
 }
 
 function clear() {

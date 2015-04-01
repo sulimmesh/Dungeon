@@ -8,13 +8,30 @@
 	<div class="text-holder holder" id="instruction-holder">
 		<p class="text" id="instruction">Use WASD to navigate around the viewer</p>
 	</div>
+	<div class="holder" id="data-holder">
+		<div>
+			<span>Lives: </span>
+			<span data-item="5" id="data-lives">5</span>
+		</div>
+		<div>
+			<span>Level: </span>
+			<span data-item="1" id="data-level">1</span>
+		</div>
+		<div>
+			<span>Score: </span>
+			<span data-item="0" id="data-score">0</span>
+		</div>
+		<div>
+			<span>Timer: </span>
+			<span data-item="0:00" id="data-timer">0:00</span>
+		</div>
+	</div>	
 	<div class="holder" id="canvas-holder">
 		<canvas id="canvas" width="500px" height="500px"></canvas>
 	</div>
 
-	<div data-item="" id="data-item"></div>
-	<div id="mazeholder">
-		<img src="maze.png" id="maze">
+	<div type="hidden" id="mazeholder">
+		<img type="hidden" src="maze.png" id="maze">
 	</div>	
 </body>
 </html>
