@@ -13,6 +13,7 @@ var zombieArray = [];
 //declaring the data elements
 var dataArray = [document.getElementById("data-lives"), document.getElementById("data-level"), 
 	document.getElementById("data-score"), document.getElementById("data-timer")];
+var timer = 0, score = 0;
 
 //zombie object
 function Zombie(zombieX, zombieY) {
@@ -48,7 +49,30 @@ function init() {
 	drawChar(player);
 	walkInterval = setInterval(moveZombie, 1500);
 	genInterval = setInterval(genZombie, 20000);
-	dataInterval = setInterval(writeData, 1000);
+	dataInterval = setInterval(dataHandle, 1000);
+}
+
+function dataHandle() {
+	timerTracker();
+	scoreTracker();
+	writeData();
+}
+
+function timerTracker() {
+	timer++;
+	var seconds = timer % 60; 
+	var minutes = Math.floor(timer/60);
+	var time;
+	if (seconds > 9) {
+		time = ""+minutes+":"+seconds;
+	} else {
+		time = ""+minutes+":0"+seconds; 
+	}
+	dataArray[3].setAttribute("data-item",time);
+}
+
+function scoreTracker() {
+
 }
 
 function writeData() {
