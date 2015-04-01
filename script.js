@@ -72,7 +72,8 @@ function timerTracker() {
 }
 
 function scoreTracker() {
-
+	score = Math.floor(timer/10)*1000;
+	dataArray[2].setAttribute("data-item",score);
 }
 
 function writeData() {
